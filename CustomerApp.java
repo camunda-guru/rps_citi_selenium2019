@@ -1,6 +1,8 @@
 package com.citi.banking;
 
 
+import java.util.Scanner;
+
 import org.bson.Document;
 
 import com.mongodb.DBCursor;
@@ -16,11 +18,23 @@ public class CustomerApp {
 	public static void write(MongoCollection collection)
 	{
 		//Document
-				Document doc =new Document("firstName","Parameswari");
-				doc.append("lastName", "bala");
-				doc.append("salary", 356796);
-				doc.append("dob", "1970-12-2");
-				collection.insertOne(doc);
+					
+				Document doc; 
+				Scanner scanner=new Scanner(System.in);				
+				for(int i=0;i<5;i++)
+				{
+					System.out.println("Enter First Name");
+					
+						doc=new Document("firstName",scanner.nextLine());
+						System.out.println("Enter Last Name");
+						doc.append("lastName", scanner.nextLine());
+						System.out.println("Enter Salary");
+						doc.append("salary", scanner.nextInt());
+						scanner.nextLine();
+						System.out.println("Enter DOB");
+						doc.append("dob", scanner.nextLine());
+						collection.insertOne(doc);
+				}
 		
 	}
 	
