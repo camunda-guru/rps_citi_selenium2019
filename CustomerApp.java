@@ -1,75 +1,53 @@
 package com.citi.banking;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Scanner;
 
-import com.citi.banking.entities.Customer;
+import org.bson.Document;
 
-class CustomerApp {
-	
-   public static Customer assignvalues(Customer customer)
-   {
-	   Scanner scanner = new Scanner(System.in);
-	   System.out.println("Enter First Name");		
-		customer.setFirstName(scanner.nextLine());
-		System.out.println("Enter Last Name");
-		customer.setLastName(scanner.nextLine());
-		System.out.println("Enter Salary");
-		customer.setSalary(scanner.nextLong());
-		scanner.nextLine();
-		System.out.println("Enter year");
-		int year=scanner.nextInt();
-		scanner.nextLine();
-		System.out.println("Enter month");
-		int month=scanner.nextInt();
-		scanner.nextLine();
-		System.out.println("Enter day");
-		int day=scanner.nextInt();
-		scanner.nextLine();		
-		customer.setDob(LocalDate.of(year, month, day));
-		return customer;
-   }
-	
-   public static void readvalues(Customer customer)
-   {
-	   System.out.println("First Name=\t"+customer.getFirstName());
-		System.out.println("Last Name=\t"+customer.getLastName());
-		System.out.println("Salary=\t"+customer.getSalary());
-		System.out.println("DOB=\t"+customer.getDob().toString());
-	   
-   }
-	
-	
-	
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 
+
+public class CustomerApp {
+
+	public static void write(MongoCollection collection)
+	{
+		//Document
+				Document doc =new Document("firstName","Parameswari");
+				doc.append("lastName", "bala");
+				doc.append("salary", 356796);
+				doc.append("dob", "1970-12-2");
+				collection.insertOne(doc);
+		
+	}
+	
+	public static void read(MongoCollection collection)
+	{
+		//reading 
+		
+	 MongoCursor cursor =collection.find().iterator();
+         while(cursor.hasNext())
+         {
+        	 System.out.println(cursor.next());
+         }
+		
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		//created customer object	
-		//Array
-		Scanner scanner =new Scanner(System.in);
-		System.out.println("Enter Customer Count");
-		int count=scanner.nextInt();
-		scanner.nextLine();
-		Customer[] customerArray =new Customer[count];					
-		//set the values
-		for(int i=0;i<count;i++)
-		{
-		    customerArray[i]=new Customer();
-		    customerArray[i]=assignvalues(customerArray[i]); 	
-		}	
-		//read the values
-		//enhanced for loop
+		//connection test
+		MongoClient client=new MongoClient("localhost",27017);
+		System.out.println("Connection created");
+		//create database
+		MongoDatabase db = client.getDatabase("citidb");
+		//create collection
+		MongoCollection collection =db.getCollection("customers");		
+		//write(collection);		
+		read(collection);
 		
-		for(Customer obj : customerArray)
-		 readvalues(obj);
-		
-		
-
 	}
 
-	
-	
 }
