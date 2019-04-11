@@ -78,38 +78,43 @@ public class CanadaPhoneNumberTest {
    	   driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
    	   WebElement element=null;
    	   
-   	   //for(String phoneNumber :getPhoneNumbers())
-   	   //{
+   	   for(String phoneNumber :getPhoneNumbers())
+   	   {
    		   element=driver.findElement(By.id("c411PeopleReverseWhat"));
    		  element.clear();
-   		   element.sendKeys(getPhoneNumbers().get(0));
+   		   element.sendKeys(phoneNumber);
    		   element =driver.findElement(By.id("c411PeopleReverseFind"));
    		   element.click();
-   		 driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);
+   		// driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);
+   		  
    		 
-   
-   		 
-   		 element = driver.findElement(By.xpath("//*[@id=\"ypgBody\"]/div[2]/div[1]/div[3]/div/div/div[1]/h1/span"));
-   		 if(element!=null)
-   		 {
+   		if(driver.findElements(By.xpath("//*[@id=\"ypgBody\"]/div[2]/div[1]/div[3]/div/div/div[1]/h1/span")).size()!=0)
+   		{
+   		   element=driver.findElement(By.xpath("//*[@id=\"ypgBody\"]/div[2]/div[1]/div[3]/div/div/div[1]/h1/span"));
    			 System.out.println(element.getText());
-   		 }
+   		 
    		 
    		 int count=1;
-   while(count<4)
-   {
-   		element = driver.findElement(By.xpath("//*[@id=\"ypgBody\"]/div[2]/div[2]/div/div/div[1]/div[1]/div[2]/div/span["+count+"]"));
-   	 if(element!=null)
-		 {
-			 System.out.println(element.getText());
-		 }
-   	 count++;
-   } 
-   		 //element=driver.findElement(By.cssSelector("close newsletter-modal__close"));
+		   while(count<4)
+		   {
+			   if(driver.findElements(By.xpath("//*[@id=\"ypgBody\"]/div[2]/div[2]/div/div/div[1]/div[1]/div[2]/div/span["+count+"]")).size()!=0)
+			   {
+		   		element = driver.findElement(By.xpath("//*[@id=\"ypgBody\"]/div[2]/div[2]/div/div/div[1]/div[1]/div[2]/div/span["+count+"]"));
+		   	 if(element!=null)
+				 {
+					 System.out.println(element.getText());
+				 }
+			   }
+			   else
+				   break;
+		   	 count++;
+		   } 
+   		}
+   		 //element=driver.findElement(By.cssSelector("button.close newsletter-modal__close"));
    		 //element.click();
    		 
-   		  // driver.navigate().to("http://www.canada411.ca/");
-   	   //}
+   		  driver.navigate().to("http://www.canada411.ca/");
+   	   }
    	   driver.close();
 	   
    	
