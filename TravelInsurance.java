@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -16,6 +17,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
 
 import com.citi.banking.models.Traveller;
 
@@ -85,7 +92,70 @@ private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\Trav
 			System.out.println(traveller.getDob().toString());
 			System.out.println(traveller.getEmail());
 		}
+		 System.setProperty("webdriver.chrome.driver","E:\\software\\A08\\file\\chromedriver_win32\\chromedriver.exe");
+		   WebDriver driver=new ChromeDriver();
+		   JavascriptExecutor js = (JavascriptExecutor) driver;
+		   driver.get("https://www.travelsupermarket.com/travel-insurance/enquiry/");
+		   driver.manage().window().maximize();
+	   	   driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		   WebElement element=driver.findElement(By.id("policytype_100label"));
+		   element.click();
+		   int count=1;
+		   while(count<4)
+		   {
+		   element=driver.findElement(By.xpath("//*[@id=\"Quote_Country_Wrap\"]/div["+count+"]/label"));
+		   element.click();
+		   js.executeScript("window.scrollBy(0,1000)");
+		   count=count+2;
+		   }
+		   element=driver.findElement(By.xpath("//*[@id=\"startDate_1daysTime_Label\"]"));
+		   element.click();
+		   element=driver.findElement(By.xpath("//*[@id=\"endDate_10daysTime_Label\"]"));
+		   element.click();
+		 
+		   //policy features
+		   Select feature = new Select(driver.findElement(By.id("Quote.Value.OptionType.101")));
+			feature.selectByVisibleText("At least £1,000");
+		   //gadget covers
+			  js.executeScript("window.scrollBy(0,1000)");
+			 element=driver.findElement(By.xpath("//*[@id=\"qs_extras\"]/div[2]/ul/li[1]/label"));
+			   element.click();
+			   element=driver.findElement(By.xpath("//*[@id=\"qs_extras\"]/div[2]/ul/li[2]/label"));
+			   element.click();
+			 
+			   //count++;
+		
+		
+			element=driver.findElement(By.xpath("//*[@id=\"grouptype_100label\"]"));
+			   element.click();		
+			//dob   
+			element=driver.findElement(By.id("qs_dob_t1_Day"));   			   
+			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getDay()));	
+			element=driver.findElement(By.id("qs_dob_t1_Month"));   			   
+			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getMonth()));	
+			element=driver.findElement(By.id("qs_dob_t1_Year"));   			   
+			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getYear()));	
+			js.executeScript("window.scrollBy(0,1000)");
+			//medical condition
+			element=driver.findElement(By.xpath("//*[@id=\"preex_no_label\"]"));
+			element.click();
+			//email
+			element=driver.findElement(By.id("EmailAddress")); 
+			element.sendKeys(getTravllers().get(0).getEmail());
+			js.executeScript("window.scrollBy(0,1000)");
+			element=driver.findElement(By.id("ConfirmEmail")); 
+			element.sendKeys(getTravllers().get(0).getEmail());
+			element=driver.findElement(By.xpath("//*[@id=\"yourcontactperferenceemailupdatelabel\"]"));
+			element.click();
+			//consent
+			element=driver.findElement(By.xpath("//*[@id=\"qs_confirm\"]/div/div/label"));
+			element.click();
+			//proceed
+			element=driver.findElement(By.id("getQuotes"));
+			element.click();
+			
 	}
+	
 	
 	
 }
