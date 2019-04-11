@@ -22,7 +22,7 @@ import com.citi.banking.models.Traveller;
 public class TravelInsurance {
 private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\TravelInsurance.xlsx";
 	
-	public static List<Traveller> getPhoneNumbers()
+	public static List<Traveller> getTravllers()
 	{
 		 List<Traveller> travellerList=new ArrayList<Traveller>();
 		 Traveller traveller=null;
@@ -31,7 +31,7 @@ private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\Trav
 			Workbook workbook =new XSSFWorkbook(fin);
 			Sheet datatypeSheet = workbook.getSheetAt(0);
 	        Iterator<Row> iterator = datatypeSheet.iterator();
-	        iterator.next();
+	        //iterator.next();
 	         
 	        while(iterator.hasNext())
 	        {
@@ -75,6 +75,16 @@ private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\Trav
 			e.printStackTrace();
 		}
 		  return travellerList;
+	}
+	
+	
+	public static void main(String[] args)
+	{
+		for(Traveller traveller : getTravllers())
+		{
+			System.out.println(traveller.getDob().toString());
+			System.out.println(traveller.getEmail());
+		}
 	}
 	
 	
