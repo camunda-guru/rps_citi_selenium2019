@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,14 +18,22 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.bson.Document;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import com.citi.banking.models.Traveller;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 public class TravelInsurance {
 private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\TravelInsurance.xlsx";
@@ -92,12 +101,24 @@ private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\Trav
 			System.out.println(traveller.getDob().toString());
 			System.out.println(traveller.getEmail());
 		}
-		 System.setProperty("webdriver.chrome.driver","E:\\software\\A08\\file\\chromedriver_win32\\chromedriver.exe");
-		   WebDriver driver=new ChromeDriver();
+		MongoClient client=new MongoClient("localhost",27017);
+		System.out.println("Connection created");
+		//create database
+		MongoDatabase db = client.getDatabase("citidb");
+		//create collection
+		MongoCollection collection =db.getCollection("policies");	
+		
+		//System.setProperty("webdriver.edge.driver", "E:\\software\\A08\\file\\MicrosoftWebDriver.exe");
+		System.setProperty("webdriver.chrome.driver","E:\\software\\A08\\file\\chromedriver_win32\\chromedriver.exe");
+		//System.setProperty("webdriver.ie.driver","E:\\software\\A08\\file\\IEDriverServer_x64_3.14.0\\IEDriverServer.exe");  
+		
+		WebDriver driver=new ChromeDriver();
 		   JavascriptExecutor js = (JavascriptExecutor) driver;
 		   driver.get("https://www.travelsupermarket.com/travel-insurance/enquiry/");
+		   driver.navigate().refresh();
+		   
 		   driver.manage().window().maximize();
-	   	   driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	   	   driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		   WebElement element=driver.findElement(By.id("policytype_100label"));
 		   element.click();
 		   int count=1;
@@ -132,29 +153,57 @@ private static final String FILE_NAME = "G:\\Local disk\\selenium\\apr2019\\Trav
 			element=driver.findElement(By.id("qs_dob_t1_Day"));   			   
 			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getDay()));	
 			element=driver.findElement(By.id("qs_dob_t1_Month"));   			   
-			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getMonth()));	
+			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getMonth()+1));	
 			element=driver.findElement(By.id("qs_dob_t1_Year"));   			   
 			element.sendKeys(String.valueOf(getTravllers().get(0).getDob().getYear()));	
 			js.executeScript("window.scrollBy(0,1000)");
 			//medical condition
 			element=driver.findElement(By.xpath("//*[@id=\"preex_no_label\"]"));
 			element.click();
+			
 			//email
 			element=driver.findElement(By.id("EmailAddress")); 
 			element.sendKeys(getTravllers().get(0).getEmail());
-			js.executeScript("window.scrollBy(0,1000)");
 			element=driver.findElement(By.id("ConfirmEmail")); 
 			element.sendKeys(getTravllers().get(0).getEmail());
 			element=driver.findElement(By.xpath("//*[@id=\"yourcontactperferenceemailupdatelabel\"]"));
 			element.click();
-			//consent
-			element=driver.findElement(By.xpath("//*[@id=\"qs_confirm\"]/div/div/label"));
-			element.click();
-			//proceed
-			element=driver.findElement(By.id("getQuotes"));
-			element.click();
+						//consent
+			driver.findElement(By.xpath("//*[@id=\"qs_confirm\"]/div/div/label")).click();
+			js.executeScript("window.scrollBy(0,1000)");
 			
+			//proceed
+			 // driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);			
+			element=driver.findElement(By.xpath("//*[@id=\"getQuotes\"]"));
+			element.click();
+		
+			Document doc=null;
+			if(driver.findElements(By.xpath("//*[@id=\"page-101\"]/header/span/a/img")).size()!=0)
+			{
+				System.out.println(driver.findElement(By.xpath("//*[@id=\"results-container\"]/div[1]/div[1]/div/div[1]/div/span/strong")).getText());
+				int length=Integer.parseInt(driver.findElement(By.xpath("//*[@id=\"results-container\"]/div[1]/div[1]/div/div[1]/div/span/strong")).getText());
+				count=1;
+				while(count<length)
+				{
+				element=driver.findElement(By.xpath("//*[@id=\"resultsrow"+count+"\"]/div[1]/a/img"));
+				doc=new Document("companyName",element.getAttribute("alt"));
+				System.out.println(element.getAttribute("alt"));
+				
+				element=driver.findElement(By.xpath("//*[@id=\"resultsrow"+count+"\"]/div[2]/a"));
+				doc.append("policyPrice",element.getText());
+				System.out.println(element.getText());
+				count++;
+				collection.insertOne(doc);
+				}
+			}
+				
+		
+			
+			
+			
+						
 	}
+	
 	
 	
 	
